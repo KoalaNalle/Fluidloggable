@@ -86,7 +86,7 @@ public class LevelChunkSectionMixin implements LevelChunkSectionExtension {
 
         for (Short2ObjectMap.Entry<FluidState> entry : this.fluidlogged$fluidStates.short2ObjectEntrySet()) {
             buf.writeShort(entry.getShortKey());
-            buf.writeInt(Services.PLATFORM.getFluidStateIdMapper().getId(entry.getValue()));
+            buf.writeInt(Services.PLATFORM.getFluidStateIdMapper().getIdOrThrow(entry.getValue()));
         }
     }
 
@@ -98,7 +98,7 @@ public class LevelChunkSectionMixin implements LevelChunkSectionExtension {
 
         for (short i = 0; i < size; i++) {
             short pos = buf.readShort();
-            FluidState fluidState = Services.PLATFORM.getFluidStateIdMapper().byId(buf.readInt());
+            FluidState fluidState = Services.PLATFORM.getFluidStateIdMapper().byIdOrThrow(buf.readInt());
 
             this.fluidlogged$fluidStates.put(pos, fluidState);
         }
