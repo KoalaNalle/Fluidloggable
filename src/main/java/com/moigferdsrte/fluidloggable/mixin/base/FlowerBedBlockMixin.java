@@ -22,7 +22,7 @@ public abstract class FlowerBedBlockMixin extends Block {
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void fluidloggable$defaultToDry(final BlockBehaviour.Properties properties, final CallbackInfo ci) {
+    private void fluidloggable$defaultToDry(Properties properties, int shapeHeight, CallbackInfo ci) {
         this.registerDefaultState(FluidloggedBlockStateSupport.defaultToDry(this.defaultBlockState()));
     }
 

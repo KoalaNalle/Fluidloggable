@@ -14,4 +14,4 @@ pluginManagement {
 }
 
 // Should match your modid
-rootProject.name = "FL-26.2-fabric"
+rootProject.name = "FL-26.3-fabric"

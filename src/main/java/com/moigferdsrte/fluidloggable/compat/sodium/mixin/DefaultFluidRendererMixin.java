@@ -1,10 +1,8 @@
 package com.moigferdsrte.fluidloggable.compat.sodium.mixin;
 
-import com.moigferdsrte.fluidloggable.block.ConfiguredFluidloggableBlockSupport;
 import com.moigferdsrte.fluidloggable.block.FluidloggedBlockStateSupport;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
@@ -13,26 +11,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(targets = "net.caffeinemc.mods.sodium.client.render.chunk.compile.pipeline.DefaultFluidRenderer")
 public class DefaultFluidRendererMixin {
-	@Inject(method = "isFullBlockFluidVisible", at = @At("HEAD"), cancellable = true)
-	private void fluidloggable$keepConfiguredFluidTopVisible(
-		final BlockAndTintGetter view,
-		final BlockPos selfPos,
-		final Direction facing,
-		final BlockState selfState,
-		final FluidState fluidState,
-		final CallbackInfoReturnable<Boolean> cir
-	) {
-		if (facing == Direction.UP
-				&& ConfiguredFluidloggableBlockSupport.isConfigured(selfState, view, selfPos)) {
-			cir.setReturnValue(!view.getFluidState(selfPos.above()).getType().isSame(fluidState.getType()));
-		}
-	}
-
+	// Sodium 0.9.3 checks UP directly via isFullBlockFluidSideVisible, without self-occlusion.
+	// The stored-neighbour checks below therefore also keep configured fluid tops visible.
 	@Redirect(
 		method = "isFullBlockFluidSideVisible",
 		at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/services/PlatformBlockAccess;shouldOccludeFluid(Lnet/minecraft/core/Direction;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/material/FluidState;)Z")

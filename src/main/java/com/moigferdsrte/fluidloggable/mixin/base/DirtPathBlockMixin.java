@@ -10,9 +10,8 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.DirtPathBlock;
+import net.minecraft.world.level.block.PathBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
@@ -23,14 +22,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(DirtPathBlock.class)
+@Mixin(PathBlock.class)
 public abstract class DirtPathBlockMixin extends Block implements SimpleWaterloggedBlock {
     public DirtPathBlockMixin(Properties properties) {
         super(properties);
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void fluidloggable$defaultToDry(final BlockBehaviour.Properties properties, final CallbackInfo ci) {
+    private void fluidloggable$defaultToDry(Block baseBlock, Properties properties, CallbackInfo ci) {
         this.registerDefaultState(FluidloggedBlockStateSupport.defaultToDry(this.defaultBlockState()));
     }
 

@@ -30,7 +30,7 @@ public abstract class FarmlandBlockMixin extends Block implements SimpleWaterlog
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void fluidloggable$defaultToDry(final BlockBehaviour.Properties properties, final CallbackInfo ci) {
+    private void fluidloggable$defaultToDry(Block baseBlock, Properties properties, CallbackInfo ci) {
         this.registerDefaultState(FluidloggedBlockStateSupport.defaultToDry(this.defaultBlockState()));
     }
 

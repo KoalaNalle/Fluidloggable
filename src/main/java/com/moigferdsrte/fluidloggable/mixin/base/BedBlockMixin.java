@@ -14,10 +14,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
-import net.minecraft.world.level.block.BedBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -30,10 +27,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BedBlock.class)
-public abstract class BedBlockMixin extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock {
+public abstract class BedBlockMixin extends AbstractBedBlock implements SimpleWaterloggedBlock {
 	protected BedBlockMixin(final BlockBehaviour.Properties properties) {
 		super(properties);
 	}
@@ -43,30 +39,22 @@ public abstract class BedBlockMixin extends HorizontalDirectionalBlock implement
 		this.registerDefaultState(FluidloggedBlockStateSupport.defaultToDry(this.defaultBlockState()));
 	}
 
-	@Inject(method = "getStateForPlacement", at = @At("RETURN"), cancellable = true)
-	private void fluidloggable$waterlogFoot(final BlockPlaceContext context, final CallbackInfoReturnable<@Nullable BlockState> cir) {
-		cir.setReturnValue(FluidloggedBlockStateSupport.withPlacementFluid(cir.getReturnValue(), context));
+	@Override
+	public @Nullable BlockState getStateForPlacement(@NonNull BlockPlaceContext context) {
+		return FluidloggedBlockStateSupport.withPlacementFluid(super.getStateForPlacement(context), context);
 	}
 
-	@Inject(method = "setPlacedBy", at = @At("HEAD"), cancellable = true)
-	private void fluidloggable$waterlogHead(
-		final Level level,
-		final BlockPos pos,
-		final BlockState state,
-		final @Nullable LivingEntity by,
-		final ItemStack itemStack,
-		final CallbackInfo ci
-	) {
+	@Override
+	public void setPlacedBy(@NonNull Level level, @NonNull BlockPos pos, @NonNull BlockState state, @Nullable LivingEntity by, @NonNull ItemStack itemStack) {
 		BlockPos headPos = pos.relative(state.getValue(BedBlock.FACING));
 		((LevelExtension) level).fluidloggable$setBlockAndInsertFluidIfPossible(
 				headPos,
 				FluidloggedBlockStateSupport.withFluid(
-				state.setValue(BedBlock.PART, BedPart.HEAD),
-				level.getFluidState(headPos)
+						state.setValue(BedBlock.PART, BedPart.HEAD),
+						level.getFluidState(headPos)
 				),
 				Block.UPDATE_ALL
 		);
-		ci.cancel();
 	}
 
 	@Override
@@ -74,38 +62,23 @@ public abstract class BedBlockMixin extends HorizontalDirectionalBlock implement
 		return FluidloggedBlockStateSupport.getFluidState(state, super.getFluidState(state));
 	}
 
-	@Inject(method = "updateShape", at = @At("HEAD"))
-	private void fluidloggable$scheduleWaterTick(
-		final BlockState state,
-		final LevelReader level,
-		final ScheduledTickAccess ticks,
-		final BlockPos pos,
-		final Direction directionToNeighbour,
-		final BlockPos neighbourPos,
-		final BlockState neighbourState,
-		final RandomSource random,
-		final CallbackInfoReturnable<BlockState> cir
-	) {
+	@Override
+	protected @NonNull BlockState updateShape(
+            @NonNull BlockState state,
+            @NonNull LevelReader level,
+            @NonNull ScheduledTickAccess ticks,
+            @NonNull BlockPos pos,
+            @NonNull Direction directionToNeighbour,
+            @NonNull BlockPos neighbourPos,
+            @NonNull BlockState neighbourState,
+            @NonNull RandomSource random) {
 		FluidloggedBlockStateSupport.scheduleFluidTick(level, ticks, pos, state);
+		return FluidloggedBlockStateSupport.preserveFluidlogged(state, super.updateShape(state, level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random));
 	}
 
-	@Inject(method = "updateShape", at = @At("RETURN"), cancellable = true)
-	private void fluidloggable$preserveOwnWaterState(
-		final BlockState state,
-		final LevelReader level,
-		final ScheduledTickAccess ticks,
-		final BlockPos pos,
-		final Direction directionToNeighbour,
-		final BlockPos neighbourPos,
-		final BlockState neighbourState,
-		final RandomSource random,
-		final CallbackInfoReturnable<BlockState> cir
-	) {
-		cir.setReturnValue(FluidloggedBlockStateSupport.preserveFluidlogged(state, cir.getReturnValue()));
-	}
-
-	@Inject(method = "createBlockStateDefinition", at = @At("TAIL"))
-	private void fluidloggable$addWaterlogged(final StateDefinition.Builder<Block, BlockState> builder, final CallbackInfo ci) {
+	@Override
+	protected void createBlockStateDefinition(StateDefinition.@NonNull Builder<Block, BlockState> builder) {
+		super.createBlockStateDefinition(builder);
 		if (fluidloggable$isComfortsBlock()) {
 			return;
 		}

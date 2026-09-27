@@ -1,5 +1,7 @@
 package com.moigferdsrte.fluidloggable.mixin.flowing;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.moigferdsrte.fluidloggable.Fluidloggable;
 import com.moigferdsrte.fluidloggable.block.FluidloggedBlockStateSupport;
 import com.moigferdsrte.fluidloggable.extension.LevelExtension;
@@ -180,15 +182,16 @@ public abstract class FlowingFluidMixin {
 		ci.cancel();
 	}
 
-	@Redirect(
+	// Since 26.3, both vanilla tick branches use setBlockAndUpdate (UPDATE_ALL).
+	@WrapOperation(
 		method = "tick",
-		at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z")
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z")
 	)
 	private boolean fluidloggable$tickStoredFluidInsteadOfReplacingBlock(
 		final ServerLevel level,
 		final BlockPos pos,
 		final BlockState newState,
-		final int flags,
+		final Operation<Boolean> original,
 		final ServerLevel originalLevel,
 		final BlockPos originalPos,
 		final BlockState originalBlockState,
@@ -202,12 +205,12 @@ public abstract class FlowingFluidMixin {
 						previousBlock,
 						currentFluidState.getType()
 				)) {
-			((LevelExtension)level).fluidloggable$setFluid(pos, newState.getFluidState(), flags);
+			((LevelExtension)level).fluidloggable$setFluid(pos, newState.getFluidState(), Block.UPDATE_ALL);
 			return false;
 		}
 
-		((LevelExtension)level).fluidloggable$setFluid(pos, Fluids.EMPTY.defaultFluidState(), flags);
-		return level.setBlock(pos, newState, flags);
+		((LevelExtension)level).fluidloggable$setFluid(pos, Fluids.EMPTY.defaultFluidState(), Block.UPDATE_ALL);
+		return original.call(level, pos, newState);
 	}
 
 	@Redirect(

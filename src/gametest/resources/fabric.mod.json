@@ -8,12 +8,16 @@
 		"main": [
 			"com.moigferdsrte.fluidloggable.block.FluidloggedGameTestBootstrap"
 		],
+		"fabric-client-gametest": [
+			"com.moigferdsrte.fluidloggable.client.FluidloggableClientGameTest"
+		],
 		"fabric-gametest": [
 			"com.moigferdsrte.fluidloggable.block.BlockDefaultStateGameTest",
 			"com.moigferdsrte.fluidloggable.block.BucketPlacementGameTest",
 			"com.moigferdsrte.fluidloggable.block.ComfortsBlockGameTest",
 			"com.moigferdsrte.fluidloggable.block.DoorFlowGameTest",
 			"com.moigferdsrte.fluidloggable.block.FarmersDelightBlockGameTest",
+			"com.moigferdsrte.fluidloggable.block.FlowingFluidTickGameTest",
 			"com.moigferdsrte.fluidloggable.block.LavaloggedFlowGameTest",
 			"com.moigferdsrte.fluidloggable.block.TrapdoorFlowGameTest",
 			"com.moigferdsrte.fluidloggable.block.TaggedFluidloggableBlockGameTest"

@@ -37,7 +37,8 @@ public class FluidloggableMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public String getRefMapperConfig() {
-        return "";
+        // Use Mixin's default refmap handling; "" is treated as a resource path.
+        return null;
     }
 
     @Override

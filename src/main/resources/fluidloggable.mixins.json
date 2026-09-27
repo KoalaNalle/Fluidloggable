@@ -65,6 +65,7 @@
     "base.SporeBlossomBlockMixin",
     "base.StemBlockMixin",
     "base.StonecutterBlockMixin",
+    "base.StrawBedBlockMixin",
     "base.StructureVoidBlockMixin",
     "base.SugarCaneBlockMixin",
     "base.SweetBerryBushBlockMixin",
