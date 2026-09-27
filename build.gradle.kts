@@ -5,6 +5,10 @@ plugins {
 	`maven-publish`
 }
 
+base {
+	archivesName = providers.gradleProperty("archives_base_name")
+}
+
 loom {
 	accessWidenerPath = file("src/main/resources/fluidloggable.accessWidener")
 }
