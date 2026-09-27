@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -89,7 +90,8 @@ public class DefaultFluidRendererMixin {
 		return level.getFluidState(origin.offset(xOffset, 0, zOffset));
 	}
 
-	private static FluidState fluidloggable$getNeighborFluidState(
+	@Unique
+    private static FluidState fluidloggable$getNeighborFluidState(
 		final BlockGetter view,
 		final BlockPos selfPos,
 		final net.minecraft.core.Direction facing
