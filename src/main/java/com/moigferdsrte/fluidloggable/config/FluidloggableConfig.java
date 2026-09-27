@@ -122,6 +122,7 @@ public final class FluidloggableConfig {
             "SpawnerBlockMixin",
             "StemBlockMixin",
             "StonecutterBlockMixin",
+			"StrawBedBlockMixin",
             "StructureVoidBlockMixin",
             "SugarCaneBlockMixin",
             "SweetBerryBushBlockMixin",
