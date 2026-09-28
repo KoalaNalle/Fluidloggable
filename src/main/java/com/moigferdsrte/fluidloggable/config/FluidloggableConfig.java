@@ -20,6 +20,8 @@ import java.util.Map;
 
 public final class FluidloggableConfig {
 	public static final List<String> DEFAULT_FLUIDLOGGABLE_MOD_IDS = List.of(
+			"kaleidoscope_chinesefood",
+			"kaleidoscope_world_liquor",
             "displaydelight",
             "rusticdelight",
             "betternether",
@@ -33,6 +35,7 @@ public final class FluidloggableConfig {
 			"biomesoplenty"
     );
 	public static final List<String> DEFAULT_FLUIDLOGGABLE_BLOCK_IDS = List.of(
+			"kaleidoscope_cookery:stripped_bamboo_bench",
 			"deco_sniffer_egg:hollow_sniffer_egg",
 			"friendsandfoes:crab_egg",
 			"sereneseasons:season_sensor",
