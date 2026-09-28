@@ -37,7 +37,17 @@ between connections. The existing client game test checks joining an integrated
 server and synchronizing stored water and lava. The existing server game tests
 cover fluid behavior.
 
-Manual multiplayer checks before publishing:
+Manual connection tests confirmed by the reporter:
+
+- Server without Fluidloggable, normal mode: explanatory missing-support message.
+- Same server, compatibility mode after restart: connection succeeds.
+- Local dedicated Fabric 26.3 server with the matching updated build, normal mode:
+  connection succeeds.
+- Same dedicated server, compatibility mode after restart: explanatory message to
+  disable compatibility mode.
+
+The checks below also cover gameplay persistence and configurations beyond that
+confirmed connection matrix:
 
 1. In normal mode, join a server without Fluidloggable: expect the explanatory
    disconnect before chunk loading, without a buffer-underflow error.
