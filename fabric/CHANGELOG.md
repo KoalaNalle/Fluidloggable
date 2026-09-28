@@ -1,5 +1,9 @@
-### Changes
-- each block list in the config has now their separate tab and have a blacklist option
-- added piston head to the default config
-- fixed a crash with Create when building a contraption
-- fixed fluids in fluidlogged blocks not rendering when Embeddium/Rubidium is installed
+### 2.0.1-beta.9 - Minecraft 1.21.1
+
+- Initialize fluid storage for both chunk-section constructors, including sections created directly from palettes. This fixes the null fluid-map crash on that construction path used by Sable.
+- Use the platform fluid-state mapper consistently for individual updates, grouped updates, and chunk synchronization, and reject invalid fluid-state IDs.
+
+### Compatibility
+
+- Requires Java 21, Fabric Loader 0.18.2 or newer, Fabric API. Yet Another Config Lib is optional for the configuration screen.
+- The world-save format is unchanged.

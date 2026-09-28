@@ -1,5 +1,12 @@
-### Changes
-- each block list in the config has now their separate tab and have a blacklist option
-- added piston head to the default config
-- fixed a crash with Create when building a contraption
-- fixed fluids in fluidlogged blocks not rendering when Embeddium/Rubidium is installed
+### 2.0.1-beta.9 - Minecraft 1.21.1
+
+- Fix synchronization of modded fluids, including source, flowing, and falling states, by building a complete, deterministic fluid-state ID table after registration.
+- Use that table for individual updates, grouped updates, and initial chunk synchronization, and reject invalid fluid-state IDs.
+- Fix the null fluid-map crash when Sable creates chunk sections directly from palettes, including the reported getSerializedSize crash during assembly.
+
+### Compatibility
+
+- Requires Java 21, NeoForge 21.1.134 or newer. Yet Another Config Lib is optional for the configuration screen.
+- Update both the client and server. NeoForge network protocol 2 intentionally rejects older protocol-1 builds.
+- The world-save format is unchanged.
+- Automated regression tests cover fluid synchronization and both chunk-section constructors. Full Sable/Aeronautics assembly, fluid transfer, and reload behavior still require in-game verification.
