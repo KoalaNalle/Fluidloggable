@@ -22,12 +22,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class LevelChunkSectionMixin implements LevelChunkSectionExtension {
 	@Unique
 	private Short2ObjectMap<FluidState> fluidloggable$fluidStates;
+	@Unique
+	private int fluidloggable$randomTickingFluidCount;
 
 	@Override
 	public synchronized Short2ObjectMap<FluidState> fluidloggable$createAndSetFluidStatesMap() {
 		Short2ObjectOpenHashMap<FluidState> map = new Short2ObjectOpenHashMap<>();
 		map.defaultReturnValue(Fluids.EMPTY.defaultFluidState());
 		this.fluidloggable$fluidStates = map;
+		this.fluidloggable$randomTickingFluidCount = 0;
 		return map;
 	}
 
@@ -44,12 +47,31 @@ public class LevelChunkSectionMixin implements LevelChunkSectionExtension {
 	@Override
 	public synchronized void fluidloggable$copyFluidStatesFrom(final LevelChunkSectionExtension source) {
 		this.fluidloggable$fluidStates = source.fluidloggable$copyFluidStates();
+		this.fluidloggable$randomTickingFluidCount = 0;
+		for (FluidState state : this.fluidloggable$fluidStates.values()) {
+			if (state.isRandomlyTicking()) {
+				this.fluidloggable$randomTickingFluidCount++;
+			}
+		}
 	}
 
 	@Override
 	public synchronized FluidState fluidloggable$setFluidState(final int x, final int y, final int z, final FluidState fluidState) {
 		short key = fluidloggable$packLocalPos(x, y, z);
-		return fluidState.isEmpty() ? this.fluidloggable$fluidStates.remove(key) : this.fluidloggable$fluidStates.put(key, fluidState);
+		return this.fluidloggable$replaceFluidState(key, fluidState);
+	}
+
+	@Unique
+	private FluidState fluidloggable$replaceFluidState(final short key, final FluidState fluidState) {
+		final FluidState previous = fluidState.isEmpty()
+				? this.fluidloggable$fluidStates.remove(key) : this.fluidloggable$fluidStates.put(key, fluidState);
+		if (previous.isRandomlyTicking()) {
+			this.fluidloggable$randomTickingFluidCount--;
+		}
+		if (fluidState.isRandomlyTicking()) {
+			this.fluidloggable$randomTickingFluidCount++;
+		}
+		return previous;
 	}
 
 	@Override
@@ -113,7 +135,7 @@ public class LevelChunkSectionMixin implements LevelChunkSectionExtension {
 	@Inject(method = "isRandomlyTickingFluids", at = @At("RETURN"), cancellable = true)
 	private synchronized void fluidloggable$storedFluidsCanRandomTick(final CallbackInfoReturnable<Boolean> cir) {
 		if (!cir.getReturnValue()) {
-			cir.setReturnValue(this.fluidloggable$fluidStates.values().stream().anyMatch(FluidState::isRandomlyTicking));
+			cir.setReturnValue(this.fluidloggable$randomTickingFluidCount != 0);
 		}
 	}
 
@@ -135,12 +157,13 @@ public class LevelChunkSectionMixin implements LevelChunkSectionExtension {
 	@Inject(method = "read", at = @At("TAIL"))
 	private synchronized void fluidloggable$readStoredFluids(final FriendlyByteBuf buffer, final CallbackInfo ci) {
 		this.fluidloggable$fluidStates.clear();
+		this.fluidloggable$randomTickingFluidCount = 0;
 		int size = buffer.readShort();
 		for (int i = 0; i < size; i++) {
 			short key = buffer.readShort();
 			FluidState fluidState = Fluid.FLUID_STATE_REGISTRY.byId(buffer.readInt());
 			if (fluidState != null && !fluidState.isEmpty()) {
-				this.fluidloggable$fluidStates.put(key, fluidState);
+				this.fluidloggable$replaceFluidState(key, fluidState);
 				this.fluidloggable$syncStoredFluidProperty(key, fluidState);
 			}
 		}

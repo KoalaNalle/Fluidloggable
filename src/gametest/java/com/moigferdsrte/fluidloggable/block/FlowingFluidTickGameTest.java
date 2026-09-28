@@ -8,9 +8,77 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
 public final class FlowingFluidTickGameTest {
+	@GameTest(maxTicks = 220)
+	public void settledWaterloggedChannelStopsSchedulingTicks(final GameTestHelper helper) {
+		assertChannelSettlesAndDrains(helper, Fluids.WATER, Blocks.SHORT_GRASS, 120, 200);
+	}
+
+	@GameTest(maxTicks = 620)
+	public void settledLavaloggedChannelStopsSchedulingTicks(final GameTestHelper helper) {
+		assertChannelSettlesAndDrains(helper, Fluids.LAVA, FluidloggedGameTestBootstrap.testBlock, 300, 600);
+	}
+
+	private static void assertChannelSettlesAndDrains(
+			final GameTestHelper helper, final FlowingFluid fluid, final Block container,
+			final int settleTick, final int drainTick
+	) {
+		final var level = helper.getLevel();
+		for (int x = 1; x <= 6; x++) {
+			for (int z = 2; z <= 4; z++) {
+				for (int y = 1; y <= 2; y++) {
+					level.setBlock(helper.absolutePos(new BlockPos(x, y, z)),
+							Blocks.STONE.defaultBlockState(), Block.UPDATE_ALL);
+				}
+			}
+		}
+		final BlockPos first = helper.absolutePos(new BlockPos(3, 2, 3));
+		final BlockPos second = helper.absolutePos(new BlockPos(4, 2, 3));
+		level.setBlock(first.below(), Blocks.DIRT.defaultBlockState(), Block.UPDATE_ALL);
+		level.setBlock(second.below(), Blocks.DIRT.defaultBlockState(), Block.UPDATE_ALL);
+		level.setBlock(first, container.defaultBlockState(), Block.UPDATE_ALL);
+		level.setBlock(second, container.defaultBlockState(), Block.UPDATE_ALL);
+		level.setBlock(first.west(), fluid.getSource(false).createLegacyBlock(), Block.UPDATE_ALL);
+		helper.runAtTickTime(settleTick, () -> {
+			for (BlockPos pos : new BlockPos[] {first, second}) {
+				helper.assertTrue(level.getBlockState(pos).is(container), "Flow must preserve the container");
+				helper.assertTrue(level.getFluidState(pos).getType().isSame(fluid), "Channel must remain filled");
+				helper.assertFalse(level.getFluidState(pos).isSource(), "Channel must contain flowing fluid");
+				for (var type : new Fluid[] {fluid.getSource(), fluid.getFlowing()}) {
+					helper.assertFalse(level.getFluidTicks().hasScheduledTick(pos, type)
+							|| level.getFluidTicks().willTickThisTick(pos, type),
+							"Settled fluidlogged channel must not continually reschedule fluid ticks");
+				}
+			}
+			level.setBlock(first.west(), Blocks.STONE.defaultBlockState(), Block.UPDATE_ALL);
+		});
+		helper.runAtTickTime(drainTick, () -> {
+			for (BlockPos pos : new BlockPos[] {first, second}) {
+				helper.assertTrue(level.getFluidState(pos).isEmpty(), "Removing the source must wake and drain the channel");
+				helper.assertTrue(level.getBlockState(pos).is(container), "Draining must preserve the container");
+			}
+			helper.succeed();
+		});
+	}
+
+	@GameTest(maxTicks = 1)
+	public void waterAboveWaterloggedSourceDoesNotReplaceItWithFallingFlow(final GameTestHelper helper) {
+		final var level = helper.getLevel();
+		final BlockPos pos = prepareCell(helper);
+		level.setBlock(pos, Blocks.MANGROVE_ROOTS.defaultBlockState()
+				.setValue(WaterloggableBlockSupport.WATERLOGGED, true), Block.UPDATE_ALL);
+		level.setBlock(pos.above(), Blocks.WATER.defaultBlockState(), Block.UPDATE_ALL);
+
+		level.getFluidState(pos.above()).tick(level, pos.above(), level.getBlockState(pos.above()));
+
+		helper.assertTrue(level.getFluidState(pos).isSourceOfType(Fluids.WATER),
+				"Water above a waterlogged source must not replace it with falling flow");
+		helper.succeed();
+	}
+
 	@GameTest(maxTicks = 1)
 	public void unsupportedWaterFlowDrainsToAir(final GameTestHelper helper) {
 		assertVanillaFlowTick(helper, Fluids.FLOWING_WATER, false);

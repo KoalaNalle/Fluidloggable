@@ -6,6 +6,7 @@ import com.moigferdsrte.fluidloggable.Fluidloggable;
 import com.moigferdsrte.fluidloggable.block.FluidloggedBlockStateSupport;
 import com.moigferdsrte.fluidloggable.extension.LevelExtension;
 import com.moigferdsrte.fluidloggable.flowing.FluidFlowBarrier;
+import com.moigferdsrte.fluidloggable.flowing.FluidFlowUpdateSupport;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -136,7 +137,7 @@ public abstract class FlowingFluidMixin {
 		final FluidState currentFluid = level.getFluidState(pos);
 		if (FluidloggedBlockStateSupport.isSupportedFluid(targetFluid)
 				&& FluidloggedBlockStateSupport.canStoreFluid(level, pos, state, targetFluid)) {
-			if (currentFluid.isEmpty() || currentFluid.getType().isSame(targetFluid)) {
+			if (FluidFlowUpdateSupport.shouldReplaceStoredFluid(currentFluid, target)) {
 				((LevelExtension)level).fluidloggable$setFluid(
 						pos,
 						target,

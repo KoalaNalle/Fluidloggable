@@ -17,6 +17,7 @@
 			"com.moigferdsrte.fluidloggable.block.DoorFlowGameTest",
 			"com.moigferdsrte.fluidloggable.block.FarmersDelightBlockGameTest",
 			"com.moigferdsrte.fluidloggable.block.FlowingFluidTickGameTest",
+			"com.moigferdsrte.fluidloggable.block.StoredFluidRandomTickGameTest",
 			"com.moigferdsrte.fluidloggable.block.LavaloggedFlowGameTest",
 			"com.moigferdsrte.fluidloggable.block.TrapdoorFlowGameTest",
 			"com.moigferdsrte.fluidloggable.block.TaggedFluidloggableBlockGameTest"

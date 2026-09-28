@@ -10,6 +10,11 @@ public final class FluidFlowUpdateSupport {
 	private FluidFlowUpdateSupport() {
 	}
 
+	/** An unchanged flow must not wake its neighbour again: adjacent containers can form a tick loop. */
+	public static boolean shouldReplaceStoredFluid(final FluidState current, final FluidState target) {
+		return current != target && (current.isEmpty() || current.getType().isSame(target.getType()));
+	}
+
 	public static void scheduleAdjacentFluidTicks(
 			final ServerLevel level,
 			final BlockPos changedPos
