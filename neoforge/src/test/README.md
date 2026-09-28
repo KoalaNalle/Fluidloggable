@@ -41,3 +41,28 @@ In a test world with Slice & Dice:
 
 Disk storage still uses the existing per-chunk palette and FluidState codec;
 this change affects network IDs, not the world-save format.
+
+## Sable chunk construction (Minecraft 1.21.1)
+
+Four additional parameterized cases cover both LevelChunkSection constructors.
+Sable 2.0.5 uses the palette constructor in LevelPlot.newEmptyChunk. The tests
+exercise that same vanilla constructor with the real Fluidloggable mixins;
+they do not load Sable or Aeronautics themselves.
+
+Coverage includes empty-section inspection and packet size, sending sections
+between both constructor paths, clearing stale data on read, and adding,
+synchronising, and removing vanilla and modded source/flowing/falling fluids.
+Before the constructor fix, all four cases fail because the palette-created
+section has a null fluid map; the empty palette-section size check reproduces
+the reported getSerializedSize crash.
+
+Manual check with Sable 2.0.5 / Aeronautics on NeoForge 1.21.1:
+
+1. Assemble a simple dry structure with the physics assembler.
+2. Disassemble and reassemble it, then leave and rejoin the world.
+3. Repeat with fluidlogged blocks and check their fluid before and after
+   assembly, disassembly, and reloading. Fluid transfer and Sable's own save
+   path require in-game verification beyond this constructor regression.
+
+This local fix includes the earlier modded-fluid ID fix. No further network
+protocol or save-format changes are introduced by the constructor fix.
