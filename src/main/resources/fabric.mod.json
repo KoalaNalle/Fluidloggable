@@ -7,6 +7,7 @@
 	"authors": [
 		"NightEpiphany"
 	],
+	"contributors": ["Leximon (original author)", "MoreThanHidden", "PricelessKoala", "KoalaNalle (fork fixes and releases)"],
 	"license": "MIT",
 	"icon": "assets/fluidloggable/icon.png",
 	"environment": "*",

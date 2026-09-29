@@ -14,7 +14,7 @@ base {
 tasks.withType<Jar>().configureEach {
     val minecraftVersion = providers.gradleProperty("minecraft_version").get()
     val modVersion = providers.gradleProperty("mod_version").get().removeSuffix("-mc$minecraftVersion")
-    archiveVersion = "${modVersion}_mc$minecraftVersion"
+    archiveVersion = "${modVersion}-mc$minecraftVersion"
 }
 loom {
 	accessWidenerPath = file("src/main/resources/fluidloggable.accessWidener")
@@ -103,6 +103,7 @@ java {
 }
 
 tasks.jar {
+    from("CREDITS.md")
 	val projectName = project.name
 	inputs.property("projectName", projectName)
 
