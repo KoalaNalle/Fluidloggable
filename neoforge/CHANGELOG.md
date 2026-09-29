@@ -1,3 +1,9 @@
+### 2.0.1-beta.9.1 - Minecraft 1.21.1
+
+- Retain all beta.9 modded-fluid synchronization and Sable chunk-construction fixes.
+- Use consistent fluidloggable-<loader>-<version>-mc1.21.1.jar filenames.
+- Package CREDITS.md alongside the unchanged original MIT licence and copyright notice; credit original authors, upstream contributors and KoalaNalle's fork work.
+
 ### 2.0.1-beta.9 - Minecraft 1.21.1
 
 - Fix synchronization of modded fluids, including source, flowing, and falling states, by building a complete, deterministic fluid-state ID table after registration.
