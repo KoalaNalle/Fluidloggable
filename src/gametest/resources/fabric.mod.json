@@ -13,6 +13,7 @@
 		],
 		"fabric-gametest": [
 			"com.moigferdsrte.fluidloggable.block.BlockDefaultStateGameTest",
+			"com.moigferdsrte.fluidloggable.block.FullBlockEligibilityGameTest",
 			"com.moigferdsrte.fluidloggable.block.BucketPlacementGameTest",
 			"com.moigferdsrte.fluidloggable.block.DoorFlowGameTest",
 			"com.moigferdsrte.fluidloggable.block.FarmersDelightBlockGameTest",

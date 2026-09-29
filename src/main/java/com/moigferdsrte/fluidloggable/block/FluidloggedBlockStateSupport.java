@@ -41,7 +41,12 @@ public final class FluidloggedBlockStateSupport {
 	}
 
 	public static BlockState withPlacementFluid(final BlockState state, final BlockPlaceContext context) {
-		return state == null ? null : withFluid(state, context.getLevel().getFluidState(context.getClickedPos()));
+		if (state == null) {
+            return null;
+        }
+        return FluidContainerShapeSupport.canContainFluid(state, context.getLevel(), context.getClickedPos())
+                ? withFluid(state, context.getLevel().getFluidState(context.getClickedPos()))
+                : defaultToDry(state);
 	}
 
 	public static BlockState withFluid(final BlockState state, final FluidState fluidState) {
@@ -103,6 +108,9 @@ public final class FluidloggedBlockStateSupport {
 			final BlockState state,
 			final Fluid fluid
 	) {
+        if (!FluidContainerShapeSupport.canContainFluid(state, level, pos)) {
+            return false;
+        }
 		if (ConfiguredFluidloggableBlockSupport.isConfigured(state)) {
 			return isSupportedFluid(fluid)
 					&& ConfiguredFluidloggableBlockSupport.isConfigured(state, level, pos);
@@ -208,7 +216,8 @@ public final class FluidloggedBlockStateSupport {
 			final BlockState state,
 			final Fluid fluid
 	) {
-		if (!level.getFluidState(pos).isEmpty()) {
+		if (!FluidContainerShapeSupport.canContainFluid(state, level, pos)
+                || !level.getFluidState(pos).isEmpty()) {
 			return false;
 		}
 		if (ConfiguredFluidloggableBlockSupport.isConfigured(state)) {

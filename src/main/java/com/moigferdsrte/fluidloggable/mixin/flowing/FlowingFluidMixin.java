@@ -158,7 +158,8 @@ public abstract class FlowingFluidMixin {
 	) {
 		BlockState currentBlockState = level.getBlockState(pos);
 		if (!FluidloggedBlockStateSupport.isSupportedFluid(fluidState.getType())
-				|| !FluidloggedBlockStateSupport.canStoreFluid(level, pos, currentBlockState, fluidState.getType())) {
+				|| (!FluidloggedBlockStateSupport.canStoreFluid(level, pos, currentBlockState, fluidState.getType())
+                        && !FluidloggedBlockStateSupport.containsFluid(currentBlockState, fluidState.getType()))) {
 			return;
 		}
 
