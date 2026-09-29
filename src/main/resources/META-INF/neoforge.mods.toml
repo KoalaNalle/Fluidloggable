@@ -8,6 +8,7 @@ modId="fluidloggable"
 version="${version}"
 displayName="Fluidloggable"
 authors="NightEpiphany; NeoForge port by KoalaNalle"
+credits="Original mod by Leximon; MoreThanHidden, PricelessKoala; see CREDITS.md"
 description="Fluidlogging for Minecraft blocks. Experimental NeoForge core port."
 iconFile="assets/fluidloggable/icon.png"
 

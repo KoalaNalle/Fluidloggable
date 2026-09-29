@@ -76,6 +76,7 @@ tasks.processResources {
     }
 }
 tasks.jar {
+    from("CREDITS.md")
     from("LICENSE") { rename { "${it}_fluidloggable" } }
 }
 publishing {
