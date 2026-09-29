@@ -95,6 +95,7 @@
     "state.BlockDefaultStateMixin",
     "state.BlockStateBaseMixin",
     "state.StateDefinitionBuilderMixin",
+    "state.SimpleWaterloggedBlockMixin",
     "storage.BlockLightEngineMixin",
     "storage.LevelChunkMixin",
     "storage.LevelChunkSectionMixin",

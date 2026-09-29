@@ -24,9 +24,7 @@ public final class ConfiguredFluidloggableBlockSupport {
 	}
 
 	private static boolean shapeValidation(final BlockState state, final BlockGetter level, final BlockPos pos) {
-		return !state.isCollisionShapeFullBlock(level, pos)
-				|| FluidloggableConfig.DEFAULT_FLUIDLOGGABLE_BLOCK_IDS.stream().anyMatch(id -> BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString().equals(id))
-				|| FluidloggableConfig.DEFAULT_FLUIDLOGGABLE_MOD_IDS.stream().anyMatch(id -> BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace().equals(id));
+		return FluidContainerShapeSupport.canContainFluid(state, level, pos);
 	}
 
 	public static boolean isConfigured(final BlockState state) {

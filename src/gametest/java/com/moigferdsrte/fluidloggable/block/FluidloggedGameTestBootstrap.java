@@ -29,12 +29,17 @@ public final class FluidloggedGameTestBootstrap implements ModInitializer {
 			Identifier.fromNamespaceAndPath("fluidloggable-gametest", "late_configured_channel")
 	);
 
+	public static Block defaultConfiguredCube;
 	public static Block testBlock;
 	public static Block taggedBlock;
 	public static Block lateConfiguredBlock;
 
 	@Override
 	public void onInitialize() {
+        final var cubeKey = ResourceKey.create(Registries.BLOCK,
+                Identifier.fromNamespaceAndPath("biomesoplenty", "fluidloggable_test_cube"));
+        defaultConfiguredCube = Registry.register(BuiltInRegistries.BLOCK, cubeKey,
+                new Block(BlockBehaviour.Properties.of().setId(cubeKey)));
 		testBlock = Registry.register(
 				BuiltInRegistries.BLOCK,
 				TEST_BLOCK_KEY,

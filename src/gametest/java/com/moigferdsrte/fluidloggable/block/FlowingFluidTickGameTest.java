@@ -12,6 +12,44 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
 public final class FlowingFluidTickGameTest {
+    @GameTest(maxTicks = 220)
+    public void denseSwampPlantsSettleAfterNeighbourUpdates(final GameTestHelper helper) {
+        final var level = helper.getLevel();
+        for (int x = 1; x <= 6; x++) {
+            for (int z = 1; z <= 6; z++) {
+                final var pos = helper.absolutePos(new BlockPos(x, 2, z));
+                level.setBlock(pos.below(), Blocks.DIRT.defaultBlockState(), Block.UPDATE_ALL);
+                final boolean edge = x == 1 || x == 6 || z == 1 || z == 6;
+                final Block block = edge ? Blocks.STONE : ((x + z) % 2 == 0 ? Blocks.SHORT_GRASS : Blocks.MANGROVE_ROOTS);
+                level.setBlock(pos, edge ? block.defaultBlockState() : block.defaultBlockState()
+                        .setValue(WaterloggableBlockSupport.WATERLOGGED, true), Block.UPDATE_ALL);
+            }
+        }
+        final Runnable assertSettled = () -> {
+            for (int x = 2; x <= 5; x++) {
+                for (int z = 2; z <= 5; z++) {
+                    final var pos = helper.absolutePos(new BlockPos(x, 2, z));
+                    helper.assertTrue(level.getBlockState(pos).is((x + z) % 2 == 0 ? Blocks.SHORT_GRASS : Blocks.MANGROVE_ROOTS),
+                            "Swamp plants must survive in the pond");
+                    helper.assertTrue(level.getFluidState(pos).isSourceOfType(Fluids.WATER), "Pond must stay filled");
+                    for (var fluid : new Fluid[]{Fluids.WATER, Fluids.FLOWING_WATER}) {
+                        helper.assertFalse(level.getFluidTicks().hasScheduledTick(pos, fluid)
+                                        || level.getFluidTicks().willTickThisTick(pos, fluid),
+                                "Settled swamp plants must not continually schedule fluid ticks");
+                    }
+                }
+            }
+        };
+        helper.runAtTickTime(100, () -> {
+            assertSettled.run();
+            level.setBlock(helper.absolutePos(new BlockPos(1, 2, 3)), Blocks.DIRT.defaultBlockState(), Block.UPDATE_ALL);
+        });
+        helper.runAtTickTime(200, () -> {
+            assertSettled.run();
+            helper.succeed();
+        });
+    }
+
 	@GameTest(maxTicks = 220)
 	public void settledWaterloggedChannelStopsSchedulingTicks(final GameTestHelper helper) {
 		assertChannelSettlesAndDrains(helper, Fluids.WATER, Blocks.SHORT_GRASS, 120, 200);
