@@ -14,7 +14,7 @@ import net.minecraft.world.level.material.Fluids;
 
 public final class FullBlockEligibilityGameTest {
     @GameTest(maxTicks = 1)
-    public void fullCubesCannotAcquireFluid(final GameTestHelper helper) {
+    public void fullCubesWithoutAnExplicitExceptionCannotAcquireFluid(final GameTestHelper helper) {
         final var level = helper.getLevel();
         final var pos = helper.absolutePos(new BlockPos(3, 2, 3));
         final var candidates = BuiltInRegistries.BLOCK.stream()
@@ -23,7 +23,7 @@ public final class FullBlockEligibilityGameTest {
                 .filter(state -> state.isCollisionShapeFullBlock(level, pos))
                 .map(state -> BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString()).sorted().toList();
         Fluidloggable.LOGGER.info("Full collision cubes with fluid properties: {}", candidates);
-        for (Block block : new Block[]{Blocks.BEACON, Blocks.SPAWNER, Blocks.SHULKER_BOX, Blocks.PISTON, Blocks.STICKY_PISTON, Blocks.VAULT, FluidloggedGameTestBootstrap.defaultConfiguredCube}) {
+        for (Block block : new Block[]{Blocks.BEACON, Blocks.STONE, Blocks.BRICKS, Blocks.IRON_BLOCK, FluidloggedGameTestBootstrap.defaultConfiguredCube}) {
             final var state = block.defaultBlockState();
             helper.assertTrue(state.isCollisionShapeFullBlock(level, pos), "Fixture must be a full cube");
             helper.assertFalse(FluidloggedBlockStateSupport.canStoreFluid(level, pos, state, Fluids.WATER),
@@ -36,6 +36,41 @@ public final class FullBlockEligibilityGameTest {
                 helper.assertFalse(container.placeLiquid(level, pos, state, Fluids.WATER.getSource(false)),
                         "Dispenser/liquid placement must also reject the full cube");
             }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(maxTicks = 1)
+    public void intentionalFullContainersRetainFluidlogging(final GameTestHelper helper) {
+        final var level = helper.getLevel();
+        final var containers = BuiltInRegistries.BLOCK.stream()
+                .filter(block -> block == Blocks.SPAWNER || block == Blocks.PISTON
+                        || block == Blocks.STICKY_PISTON || block == Blocks.VAULT
+                        || block instanceof net.minecraft.world.level.block.ShulkerBoxBlock)
+                .toList();
+        int index = 0;
+        for (Block block : containers) {
+            final var pos = helper.absolutePos(new BlockPos(1 + index % 6, 2, 1 + index / 6));
+            index++;
+            final var state = block.defaultBlockState();
+            level.setBlock(pos, state, Block.UPDATE_ALL);
+            final String name = BuiltInRegistries.BLOCK.getKey(block).toString();
+            helper.assertTrue(state.isCollisionShapeFullBlock(level, pos), "Fixture must exercise full collision: " + name);
+            for (var fluid : new net.minecraft.world.level.material.Fluid[]{Fluids.WATER, Fluids.LAVA}) {
+                helper.assertTrue(FluidloggedBlockStateSupport.canStoreFluid(level, pos, state, fluid),
+                        "Intentional full container must accept stored fluid: " + name);
+                helper.assertTrue(FluidloggedBlockStateSupport.canPlaceFluid(level, pos, state, fluid),
+                        "Intentional full container must accept bucket placement: " + name);
+            }
+            helper.assertTrue(block instanceof SimpleWaterloggedBlock, "Fixture must provide the vanilla water bucket route");
+            final var container = (SimpleWaterloggedBlock) block;
+            helper.assertTrue(container.canPlaceLiquid(null, level, pos, state, Fluids.WATER),
+                    "Vanilla bucket route must remain available: " + name);
+            helper.assertTrue(container.placeLiquid(level, pos, state, Fluids.WATER.getSource(false)),
+                    "Water placement must succeed: " + name);
+            helper.assertTrue(level.getBlockState(pos).is(block), "Filling must preserve the block: " + name);
+            helper.assertTrue(level.getFluidState(pos).isSourceOfType(Fluids.WATER),
+                    "Filled block must contain water: " + name);
         }
         helper.succeed();
     }

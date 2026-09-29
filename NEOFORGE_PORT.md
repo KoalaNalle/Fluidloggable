@@ -22,14 +22,21 @@ The graphical settings screen is not included in this core build.
 ## Issues checked before porting
 
 Upstream [#6](https://github.com/NightEpiphany/Fluidloggable/issues/6) did not list affected blocks.
-A runtime block scan and failing regression test reproduced unwanted eligibility for beacons,
-spawners, closed shulker boxes (all colours), retracted pistons/sticky pistons and vaults.
-Full collision cubes now reject newly inserted water/lava through the flow, placement and
-vanilla bucket/dispenser paths. Default block/mod selections no longer bypass this shape rule.
+A runtime scan found several full-collision containers, but full collision alone does not
+establish a bug: some are intentional features. Spawners, shulker boxes (all colours),
+pistons/sticky pistons (including retracted states) and vaults have explicit exceptions and
+retain water/lava logging. Piston fluidlogging is also shown in the
+[mod-page illustration](https://cdn.modrinth.com/data/cached_images/b3fc71518de04ccc1336382b479bf4b36b9b4485.png).
+Beacons remain restricted pending clarification.
+
+Other full collision cubes reject newly inserted water/lava through flow, placement and vanilla
+bucket/dispenser paths. Default block/mod selections do not bypass this shape rule.
 Partial blocks such as dirt paths, farmland and end portal frames remain eligible.
 Vanilla deliberately waterloggable full-collision blocks (leaves, mangrove roots, copper grates
-and barriers) retain that behaviour. Existing stored fluid ticks must preserve their containing
-block, including blocks which are no longer eligible for new fluid.
+and barriers) retain that behaviour. Existing stored fluid ticks preserve their containing block,
+including blocks which are no longer eligible for new fluid. Regression tests cover ordinary
+building blocks, a full cube in a configured namespace, all restored containers' water placement,
+and an actual lava bucket used on a retracted piston.
 
 Upstream [#11](https://github.com/NightEpiphany/Fluidloggable/issues/11) shows
 3.1.2-beta.5 on Minecraft 26.2, with C2ME also present. It contains no shareable Spark call tree,
@@ -40,8 +47,9 @@ then changes a neighbour and checks that they settle again. Existing water/lava 
 also check settling and drainage. These checks pass; they do not establish the cause of the
 reporter's CPU spike or replace profiling the original modpack.
 
-The pre-port fixes were separately validated on Fabric (54 gameplay tests) and committed as
-`ec0241a`, so they can be reviewed or cherry-picked independently of this port.
+The initial pre-port checkpoint was validated on Fabric (54 gameplay tests) and committed as
+`ec0241a`. That checkpoint predates the clarified intentional full-block exceptions above;
+the current behaviour and its added regression tests are validated on NeoForge.
 
 ## Build and validation
 
@@ -57,7 +65,7 @@ waits for resource loading and exits automatically. It does not open a user worl
 
 Validation on Windows:
 - 34 JUnit tests passed.
-- 51 core gameplay tests passed on the NeoForge dedicated GameTest server.
+- 53 core gameplay tests passed on the NeoForge dedicated GameTest server.
 - NeoForge client startup smoke test passed, including explicit loading of every client mixin target.
 - Fabric's three Farmer's Delight gameplay tests are excluded pending that integration.
 
