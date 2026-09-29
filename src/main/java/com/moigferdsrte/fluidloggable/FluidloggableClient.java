@@ -1,25 +1,24 @@
 package com.moigferdsrte.fluidloggable;
 
-import com.moigferdsrte.fluidloggable.config.FluidloggableConfig;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-
+import com.moigferdsrte.fluidloggable.network.ClientCompatibilityNetworking;
+import com.moigferdsrte.fluidloggable.network.CompatibilityPayload;
 import com.moigferdsrte.fluidloggable.network.ClientboundFluidUpdatePacket;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 
-@Environment(EnvType.CLIENT)
-public final class FluidloggableClient implements ClientModInitializer {
-    @Override
-    public void onInitializeClient() {
-        com.moigferdsrte.fluidloggable.network.ClientCompatibilityNetworking.register();
-        if (FluidloggableConfig.isClientOnlyCompatibilityModeEnabled()) {
-            return;
-        }
-
-        ClientPlayNetworking.registerGlobalReceiver(
-                ClientboundFluidUpdatePacket.TYPE,
-                (payload, _) -> ClientboundFluidUpdatePacket.apply(payload)
-        );
+@Mod(value = Fluidloggable.MOD_ID, dist = Dist.CLIENT)
+public final class FluidloggableClient {
+    public FluidloggableClient(final IEventBus modBus) {
+        ClientCompatibilityNetworking.initialize();
+        modBus.addListener(FluidloggableClient::registerPayloadHandlers);
     }
+
+    private static void registerPayloadHandlers(final RegisterClientPayloadHandlersEvent event) {
+        event.register(CompatibilityPayload.TYPE, ClientCompatibilityNetworking::handle);
+        event.register(ClientboundFluidUpdatePacket.TYPE,
+                (payload, context) -> ClientboundFluidUpdatePacket.apply(payload));
+    }
+
 }

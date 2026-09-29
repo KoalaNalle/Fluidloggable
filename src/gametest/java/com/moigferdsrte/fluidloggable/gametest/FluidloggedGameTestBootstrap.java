@@ -1,7 +1,11 @@
-package com.moigferdsrte.fluidloggable.block;
+package com.moigferdsrte.fluidloggable.gametest;
+
+import com.moigferdsrte.fluidloggable.block.*;
 
 import com.moigferdsrte.fluidloggable.config.FluidloggableConfig;
-import net.fabricmc.api.ModInitializer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -15,7 +19,12 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import java.util.List;
 
-public final class FluidloggedGameTestBootstrap implements ModInitializer {
+@Mod("fluidloggable_gametest")
+public final class FluidloggedGameTestBootstrap {
+    public FluidloggedGameTestBootstrap(final IEventBus bus) {
+        bus.addListener(this::registerBlocks);
+        NeoForgeGameTests.register(bus);
+    }
 	private static final ResourceKey<Block> TEST_BLOCK_KEY = ResourceKey.create(
 			Registries.BLOCK,
 			Identifier.fromNamespaceAndPath("fluidloggable-gametest", "fluid_channel")
@@ -34,8 +43,8 @@ public final class FluidloggedGameTestBootstrap implements ModInitializer {
 	public static Block taggedBlock;
 	public static Block lateConfiguredBlock;
 
-	@Override
-	public void onInitialize() {
+    private void registerBlocks(final RegisterEvent event) {
+        if (!event.getRegistryKey().equals(Registries.BLOCK)) return;
         final var cubeKey = ResourceKey.create(Registries.BLOCK,
                 Identifier.fromNamespaceAndPath("biomesoplenty", "fluidloggable_test_cube"));
         defaultConfiguredCube = Registry.register(BuiltInRegistries.BLOCK, cubeKey,

@@ -1,8 +1,10 @@
-package com.moigferdsrte.fluidloggable.block;
+package com.moigferdsrte.fluidloggable.gametest;
+
+import com.moigferdsrte.fluidloggable.block.*;
 
 import com.moigferdsrte.fluidloggable.config.FluidloggableConfig;
 import com.moigferdsrte.fluidloggable.flowing.FluidFlowUpdateSupport;
-import net.fabricmc.fabric.api.gametest.v1.GameTest;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;

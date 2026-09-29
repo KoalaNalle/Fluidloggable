@@ -1,6 +1,8 @@
-package com.moigferdsrte.fluidloggable.block;
+package com.moigferdsrte.fluidloggable.gametest;
 
-import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import com.moigferdsrte.fluidloggable.block.*;
+
+
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;

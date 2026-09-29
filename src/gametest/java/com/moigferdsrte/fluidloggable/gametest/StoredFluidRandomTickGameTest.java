@@ -1,8 +1,10 @@
-package com.moigferdsrte.fluidloggable.block;
+package com.moigferdsrte.fluidloggable.gametest;
+
+import com.moigferdsrte.fluidloggable.block.*;
 
 import com.moigferdsrte.fluidloggable.extension.LevelChunkSectionExtension;
 import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.gametest.v1.GameTest;
+
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.chunk.LevelChunkSection;

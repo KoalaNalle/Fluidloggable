@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.moigferdsrte.fluidloggable.Fluidloggable;
-import net.fabricmc.loader.api.FabricLoader;
+import java.util.Properties;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -48,13 +48,17 @@ final class ConfigVersionManager {
 	}
 
 	static String currentVersion() {
-		return FabricLoader.getInstance()
-				.getModContainer(Fluidloggable.MOD_ID)
-				.map(container -> container.getMetadata().getVersion().getFriendlyString())
-				.orElseGet(() -> {
-					Fluidloggable.LOGGER.error("Fluidloggable mod metadata is unavailable; using unknown config version");
-					return "unknown";
-				});
+		// Mixin configuration loads before NeoForge's runtime ModList is available.
+        try (var stream = ConfigVersionManager.class.getResourceAsStream("/fluidloggable-version.properties")) {
+            if (stream != null) {
+                final var properties = new Properties();
+                properties.load(stream);
+                return properties.getProperty("version", "unknown");
+            }
+        } catch (IOException exception) {
+            Fluidloggable.LOGGER.error("Cannot read Fluidloggable build version", exception);
+        }
+        return "unknown";
 	}
 
 	private static Optional<JsonObject> readConfig(final Path configPath) {

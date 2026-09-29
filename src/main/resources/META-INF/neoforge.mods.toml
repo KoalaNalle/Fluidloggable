@@ -1,0 +1,29 @@
+modLoader="javafml"
+loaderVersion="[12,)"
+license="MIT"
+issueTrackerURL="https://github.com/KoalaNalle/Fluidloggable/issues"
+
+[[mods]]
+modId="fluidloggable"
+version="${version}"
+displayName="Fluidloggable"
+authors="NightEpiphany; NeoForge port by KoalaNalle"
+description="Fluidlogging for Minecraft blocks. Experimental NeoForge core port."
+iconFile="assets/fluidloggable/icon.png"
+
+[[mixins]]
+config="fluidloggable.mixins.json"
+
+[[dependencies.fluidloggable]]
+modId="neoforge"
+type="required"
+versionRange="[26.3.0.33-beta,26.4)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.fluidloggable]]
+modId="minecraft"
+type="required"
+versionRange="[26.3,26.4)"
+ordering="NONE"
+side="BOTH"

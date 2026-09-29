@@ -1,4 +1,0 @@
-accessWidener v2 official
-
-accessible field net/minecraft/world/level/block/state/StateDefinition$Builder properties Ljava/util/Map;
-accessible field net/minecraft/world/level/block/state/BlockBehaviour$Properties id Lnet/minecraft/resources/ResourceKey;

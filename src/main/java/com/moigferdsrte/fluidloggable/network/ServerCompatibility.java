@@ -2,7 +2,8 @@ package com.moigferdsrte.fluidloggable.network;
 
 /** The support advertised by one configuration connection, never shared between servers. */
 public final class ServerCompatibility {
-    public static final int PROTOCOL = 1;
+    // The core NeoForge port has a different block-state registry from the Fabric build.
+    public static final int PROTOCOL = 2;
     private Integer serverProtocol;
 
     public void advertise(int protocol) {

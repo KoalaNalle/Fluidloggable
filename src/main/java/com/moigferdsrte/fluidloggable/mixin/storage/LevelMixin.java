@@ -5,7 +5,7 @@ import com.moigferdsrte.fluidloggable.block.FluidloggedBlockStateSupport;
 import com.moigferdsrte.fluidloggable.extension.LevelChunkExtension;
 import com.moigferdsrte.fluidloggable.extension.LevelExtension;
 import com.moigferdsrte.fluidloggable.network.ClientboundFluidUpdatePacket;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
@@ -167,7 +167,7 @@ public abstract class LevelMixin implements LevelAccessor, AutoCloseable, LevelE
 			ClientboundFluidUpdatePacket packet = new ClientboundFluidUpdatePacket(pos, fluidState);
 			ChunkPos chunkPos = new ChunkPos(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()));
 			for (ServerPlayer player : serverLevel.getChunkSource().chunkMap.getPlayers(chunkPos, false)) {
-				ServerPlayNetworking.send(player, packet);
+				PacketDistributor.sendToPlayer(player, packet);
 			}
 		} else {
 			this.sendBlockUpdated(pos, level.getBlockState(pos), level.getBlockState(pos), flags);

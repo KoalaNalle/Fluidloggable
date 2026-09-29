@@ -1,0 +1,13 @@
+modLoader="javafml"
+loaderVersion="[12,)"
+license="MIT"
+[[mods]]
+modId="fluidloggable_gametest"
+version="1"
+displayName="Fluidloggable gameplay tests"
+[[dependencies.fluidloggable_gametest]]
+modId="fluidloggable"
+type="required"
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"

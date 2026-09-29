@@ -1,28 +1,25 @@
 package com.moigferdsrte.fluidloggable;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-
-import com.moigferdsrte.fluidloggable.network.ClientboundFluidUpdatePacket;
+import com.moigferdsrte.fluidloggable.network.CompatibilityNetworking;
 import net.minecraft.resources.Identifier;
-
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class Fluidloggable implements ModInitializer {
-	public static final String MOD_ID = "fluidloggable";
-	public static final int UPDATE_SCHEDULE_FLUID_TICK = 0x100000;
+@Mod(Fluidloggable.MOD_ID)
+public final class Fluidloggable {
+    public static final String MOD_ID = "fluidloggable";
+    public static final int UPDATE_SCHEDULE_FLUID_TICK = 0x100000;
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public Fluidloggable(final IEventBus modBus) {
+        LOGGER.info("Initializing Fluidloggable for NeoForge");
+        modBus.addListener(CompatibilityNetworking::registerPayloads);
+        modBus.addListener(CompatibilityNetworking::registerTasks);
+    }
 
-	@Override
-	public void onInitialize() {
-		LOGGER.info("Initializing Fluidloggable");
-		com.moigferdsrte.fluidloggable.network.CompatibilityNetworking.register();
-		PayloadTypeRegistry.clientboundPlay().register(ClientboundFluidUpdatePacket.TYPE, ClientboundFluidUpdatePacket.STREAM_CODEC);
-	}
-
-	public static Identifier id(String path) {
-		return Identifier.fromNamespaceAndPath(MOD_ID, path);
-	}
+    public static Identifier id(final String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
+    }
 }

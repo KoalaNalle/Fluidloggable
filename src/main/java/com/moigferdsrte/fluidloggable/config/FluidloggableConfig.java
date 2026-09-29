@@ -6,8 +6,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.moigferdsrte.fluidloggable.Fluidloggable;
 import com.moigferdsrte.fluidloggable.block.ConfiguredFluidloggableBlockSupport;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.fml.loading.FMLPaths;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -240,7 +241,7 @@ public final class FluidloggableConfig {
     }
 
     public static boolean defaultClientOnlyCompatibilityMode() {
-        return FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT;
+        return FMLEnvironment.getDist() != Dist.CLIENT;
     }
 
     public static boolean isCollisionShapeFluidBlockingEnabled() {
@@ -450,7 +451,7 @@ public final class FluidloggableConfig {
 	}
 
 	private static Path configPath() {
-		return FabricLoader.getInstance().getConfigDir().resolve("fluidloggable.json");
+		return FMLPaths.CONFIGDIR.get().resolve("fluidloggable.json");
 	}
 
 	public record CompatibilityMixinGroup(String modId, String displayName, List<String> mixins) {

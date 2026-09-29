@@ -22,7 +22,7 @@ class ServerCompatibilityTest {
 
     @Test
     void rejectsDifferentAndInvalidProtocols() {
-        for (int protocol : new int[]{-1, 0, ServerCompatibility.PROTOCOL + 1, Integer.MAX_VALUE}) {
+        for (int protocol : new int[]{-1, 0, 1, ServerCompatibility.PROTOCOL + 1, Integer.MAX_VALUE}) {
             var connection = new ServerCompatibility();
             connection.advertise(protocol);
             assertEquals(ServerCompatibility.Problem.PROTOCOL_MISMATCH, connection.problem(false));

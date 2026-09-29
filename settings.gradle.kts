@@ -1,17 +1,7 @@
 pluginManagement {
-	repositories {
-		maven {
-			name = "Fabric"
-			url = uri("https://maven.fabricmc.net/")
-		}
-		mavenCentral()
-		gradlePluginPortal()
-	}
-
-	plugins {
-		id("net.fabricmc.fabric-loom") version providers.gradleProperty("loom_version")
-	}
+    repositories {
+        gradlePluginPortal()
+        maven("https://maven.neoforged.net/releases")
+    }
 }
-
-// Should match your modid
-rootProject.name = "FL-26.3-fabric"
+rootProject.name = "Fluidloggable-26.3-neoforge"

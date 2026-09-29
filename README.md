@@ -1,3 +1,5 @@
+> This branch is the experimental **Minecraft 26.3 NeoForge core port**. See [port status, build instructions and remaining work](NEOFORGE_PORT.md).
+
 <img src="https://i.imgur.com/RvfMjvb.png" alt="Icon" width="128" height="128" />
 
 # Fluidlogged
